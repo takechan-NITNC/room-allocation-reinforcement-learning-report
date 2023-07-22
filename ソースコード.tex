@@ -1,0 +1,65 @@
+\documentclass[titlepage]{ltjsreport}
+\usepackage{luatexja, graphicx, multirow, listings, url, hyperref, comment}
+\makeatletter
+\renewcommand{\abstractname}{アブストラクト}
+\newcommand{\captionlabel}[1]{\caption{#1}\label{#1}}
+\newcommand{\image}[2]{\begin{figure}[h]\vspace{1em}\begin{center}\includegraphics[width = .9\textwidth]{#2}\captionlabel{#1}\end{center}\end{figure}}
+\newenvironment{mytable}[2]{\begin{table}[h]\begin{center}\captionlabel{#1}\begin{tabular}{#2}}{\end{tabular}\end{center}\end{table}}
+\newcommand{\inputtextbox}[3][]{\vspace{1em}\lstset{language = #1}\lstinputlisting[caption = #2, label = #2]{#3}}
+\lstnewenvironment{textbox}[2][]{\vspace{1em}\lstset{language = #1, label = #2, caption = #2}}{}
+\renewcommand{\lstlistingname}{\figurename}
+\makeatother
+\lstset{language = , commentstyle = {\itshape}, stringstyle = {\ttfamily}, frame = {tblr}, breaklines = true, numbers = left, xleftmargin = 5.5em, framexleftmargin = 2.5em, numberstyle = {\scriptsize}, captionpos = b}
+\begin{document}
+\makeatletter
+\let\c@lstlisting=\c@figure
+\makeatother
+\begin{titlepage}
+\vspace*{1em}
+\begin{center}
+\begin{huge}
+情報工学実験
+\\
+\vspace{1em}
+に関する実験
+\end{huge}
+\end{center}
+\vspace{6em}
+\begin{flushright}
+\begin{LARGE}
+情報工学科　年　番
+\\
+\vspace{1em}
+名前
+\end{LARGE}
+\end{flushright}
+\vspace{4em}
+\begin{flushleft}
+\begin{Large}
+\begin{tabular}{ll}
+提出期限： & //（）:
+\\
+提出日： & //（）
+\\
+\end{tabular}
+\\
+\vspace{2em}
+共同実験者：班
+\\
+\vspace{1em}
+\begin{tabular}{ll}
+出席番号 & 名前
+\\
+出席番号 & 名前
+\\
+\end{tabular}
+\end{Large}
+\end{flushleft}
+\end{titlepage}
+\begin{abstract}
+\end{abstract}
+\chapter{目的}
+\begin{thebibliography}{99}
+\bibitem{Fast.com} NETFLIX, "インターネット速度の回線テスト", \url{https://fast.com/ja/}, 2023年１月24日参照.
+\end{thebibliography}
+\end{document}
