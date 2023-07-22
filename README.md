@@ -45,7 +45,9 @@
 \end{mytable}
 ```
 を実行するとこのように表示されます。
+
 ![コンパイル後の表](https://github.com/takechan-NITNC/LaTeX-report-template/assets/79554611/2afda064-ce00-4e21-8369-b6094fc108dc)
+
 キャプション・ラベルは第１必須引数で指定します。
 ### textbox
 inputtextbox同様にテキストボックスを表示したいがテキストボックスの内容を別ファイルに分けたくない，というときに使える環境です。
