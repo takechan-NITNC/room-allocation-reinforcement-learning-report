@@ -57,8 +57,60 @@
 \end{titlepage}
 \begin{abstract}
 \end{abstract}
-\chapter{目的}
+\chapter{解決方法}
+環境は\cite{環境}のEnvironmentクラスに実装されている。
+
+環境は12人が４部屋へどのように割り当てられているかを保持しているが，エージェントはそれを直接観測する訳ではない。
+
+エージェントが観測する状態や環境が受け取る行動を定義するために，「attended rooms」「movable people」という概念を導入する。「attended rooms」とは環境が４部屋のうち２部屋をランダムに選択したものである。「movable people」とはattended roomsから１人ずつ，計２人ランダムに選択したものである。attended roomsには順序の概念があり，それぞれattended room 1・attended room 2とする。movable peopleも同様に，attended room 1から選ばれたmovable person 1とattended room 2から選ばれたmovable person 2の２人からなる。attended rooms・movable peopleを抽選する処理はEnvironmentクラスの\#drawメソッドに実装されている。\#drawメソッドを図\ref{attended rooms・movable peopleの抽選}に示す。この中で使われているsnatchRandomElement関数は引数のSetからランダムに１つ要素を取り出し，その要素を元のSetから削除する関数である。attended rooms・movable peopleの抽選はエージェントが環境に対して行動する度に行われる。
+\begin{textbox}{attended rooms・movable peopleの抽選}
+#draw() {
+	const snatchedRooms = new Set([...this.rooms]);
+	this.#attendedRooms = [];
+	for (let i = 0; i < this.#a; i++) {
+		this.#attendedRooms.push(snatchRandomElement(snatchedRooms));
+	}
+	this.#movablePeople = [];
+	for (const attendedRoom of this.#attendedRooms) {
+		const snatchedMembers = new Set([...attendedRoom.members]);
+		for (let i = 0; i < this.#m; i++) {
+			this.#movablePeople.push(snatchRandomElement(snatchedMembers));
+		}
+	}
+}
+\end{textbox}
+
+エージェントが環境に対して状態を要求したとき，環境はmovable personに対して「同室希望」とした人の人数，「同室拒否」とした人の人数をattended room単位で集計する。例えば，movable person 1に対して「同室希望」とした人がattended room 2に２人，「同室拒否」とした人がattended room 2に１人いる場合，attended room 2からmovable person 1に対する集計結果は「同室希望：２　同室拒否：１」となる。環境がエージェントに対して返す状態は以下の４つを２×２の２次元配列に並べたものとなる。
+\begin{enumerate}
+\item attended room 1からmovable person 1に対する集計結果
+\item attended room 2からmovable person 1に対する集計結果
+\item attended room 1からmovable person 2に対する集計結果
+\item attended room 2からmovable person 2に対する集計結果
+\end{enumerate}
+
+環境がエージェントに状態を提供する処理はEnvironmentクラスのgetStateメソッドに実装されている。getStateメソッドを図\ref{状態の提供}に示す。この中で使われているImpressionStatクラスはattended roomからmovable personに対する集計結果を表し，「同室希望」とした人数，「同室拒否」とした人数をそれぞれnumber型でフィールドに持つ。
+\begin{textbox}{状態の提供}
+getState(): ImpressionStat[][] {
+	return this.#movablePeople.map((movablePerson) => {
+		return this.#attendedRooms.map(function (attendedRoom) {
+			return new ImpressionStat(
+			[...attendedRoom.members].filter(function (member) {
+				return member.likedPeople.has(movablePerson);
+			}).length,
+			[...attendedRoom.members].filter(function (member) {
+				return member.dislikedPeople.has(movablePerson);
+			}).length,
+			);
+		});
+	});
+}
+\end{textbox}
+
+エージェントが環境に対して行える行動はmovable peopleどうしの入れ替え，あるいは「何もしない」である。\cite{環境}には行動を表すActionクラスが定義されていて，１または２を代入可能なnumber型フィールドを２つ持つ。１・２あるいは２・１を持つAction型インスタンスはmovable person 1とmovable person2の入れ替えを表し，１・１，あるいは２・２を持つインスタンスは「何もしない」を表す。「何もしない」という行動を行った場合も，先述したattended rooms・movable peopleの抽選は行われる。
+
+エージェントが環境に対して行動を行ったとき，幸福度の総和が変化するときがある。行動に対して環境がエージェントに返す報酬は，行動後の幸福度総和から行動前の幸福度総和を引いたものである。
+
 \begin{thebibliography}{99}
-\bibitem{Fast.com} NETFLIX, "インターネット速度の回線テスト", \url{https://fast.com/ja/}, 2023/1/24参照.
+\bibitem{環境} takechan-NITNC, "room-allocation-reinforcement-learning-environment", \url{https://github.com/takechan-NITNC/room-allocation-reinforcement-learning-environment}, 2023/12/12参照.
 \end{thebibliography}
 \end{document}
